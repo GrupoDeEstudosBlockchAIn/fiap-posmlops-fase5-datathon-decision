@@ -1,28 +1,61 @@
 # app/feature_engineering.py
 
 import pandas as pd
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
+import joblib
+import logging
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 def engineer_features(df: pd.DataFrame):
     """
-    Realiza a engenharia de features a partir do DataFrame pré-processado.
-    Exemplo genérico: cria variáveis dummies e extrai a coluna target.
+    Realiza engenharia de features:
+    - Seleção de features numéricas e categóricas
+    - Escalonamento
+    - Encoding
+    - Validação de target
     """
-    # 🔹 Definindo a coluna alvo (exemplo genérico: 'contratado' como 1 ou 0)
-    if 'contratado' in df.columns:
-        labels = df['contratado']
-    else:
-        labels = pd.Series([0] * len(df))  # Placeholder
 
-    # 🔹 Selecionando algumas features numéricas
-    features = df[['idade', 'experiencia', 'salario']].copy()
+    # ✅ Verificar presença do target
+    if 'contratado' not in df.columns:
+        raise ValueError("❌ Target 'contratado' não encontrado no DataFrame!")
 
-    # 🔹 Transformação de variáveis categóricas em dummies (exemplo)
-    if 'cargo' in df.columns:
-        dummies = pd.get_dummies(df['cargo'], prefix='cargo')
-        features = pd.concat([features, dummies], axis=1)
+    labels = df['contratado']
 
-    # 🔹 Lidando com nulos (simples)
-    features.fillna(0, inplace=True)
+    # ✅ Selecionar features relevantes
+    numeric_features = ['idade', 'experiencia', 'salario', 'avaliacao_entrevista', 'engajamento', 'fit_cultural']
+    categorical_features = ['cargo', 'status']
 
-    print("✅ Engenharia de features concluída!")
-    return features, labels
+    # ✅ Tratamento de valores ausentes nas features
+    df[numeric_features] = df[numeric_features].fillna(0)
+    df[categorical_features] = df[categorical_features].fillna('desconhecido')
+
+    # ✅ Construção de Pipeline
+    numeric_transformer = Pipeline(steps=[
+        ('scaler', StandardScaler())
+    ])
+
+    categorical_transformer = Pipeline(steps=[
+        ('onehot', OneHotEncoder(handle_unknown='ignore', sparse=False))
+    ])
+
+    preprocessor = ColumnTransformer(transformers=[
+        ('num', numeric_transformer, numeric_features),
+        ('cat', categorical_transformer, categorical_features)
+    ])
+
+    # ✅ Aplicar transformações
+    X_transformed = preprocessor.fit_transform(df)
+
+    # ✅ Salvar pipeline para uso futuro (ex: na API)
+    joblib.dump(preprocessor, 'app/preprocessor.joblib')
+
+    # ✅ Salvar features transformadas para debug
+    transformed_df = pd.DataFrame(X_transformed)
+    transformed_df.to_csv('app/features_transformed.csv', index=False)
+
+    logging.info("✅ Engenharia de features finalizada e pipeline salvo.")
+
+    return X_transformed, labels
