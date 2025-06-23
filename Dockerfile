@@ -20,3 +20,4 @@ EXPOSE 8501
 
 # Etapa 7 — Comando de inicialização condicional
 CMD ["sh", "-c", "if [ \"$MODE\" = 'api' ]; then uvicorn app.api:app --host 0.0.0.0 --port 8000; else streamlit run streamlit_app.py --server.port 8501 --server.enableCORS false; fi"]
+
