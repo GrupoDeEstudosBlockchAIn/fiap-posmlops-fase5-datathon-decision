@@ -37,7 +37,7 @@ if __name__ == "__main__":
         "data/vagas/vagas.json"
     )
 
-    print("🔄 Iniciando pré-processamento dos dados...")
+    print("Iniciando pré-processamento dos dados...")
     preprocessor = DataPreprocessor()
     df_limpo = preprocessor.fit_transform(df)
 

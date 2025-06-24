@@ -4,24 +4,28 @@ from app.feature_engineering import FeatureEngineer
 
 # Caminhos dos arquivos salvos
 MODEL_PATH = 'models/model.pkl'
-FEATURES_PATH = 'data/features_treinamento.pkl'
+PIPELINE_PATH = 'models/feature_pipeline.pkl'
 
-# Carrega objetos
+# Carrega modelo treinado
 model = joblib.load(MODEL_PATH)
-print("✅ Modelo carregado com sucesso.")
+print("Modelo carregado com sucesso.")
 
-# Para garantir compatibilidade de vetorização
-X_train = joblib.load(FEATURES_PATH)
+# Carrega pipeline de engenharia de features já treinado
 fe = FeatureEngineer()
-fe.fit_transform(pd.DataFrame(columns=['cv', 'nivel_ingles', 'area_atuacao']))  # Dummy fit
-fe.vectorizer = X_train.vectorizer
-fe.ohe = X_train.ohe
+# NÃO executa fit ou fit_transform — apenas garante que self.pipeline seja carregado
+fe.pipeline = joblib.load(PIPELINE_PATH)
 
 def prever_match(dados_candidato: dict) -> dict:
     """
     Recebe um dicionário com dados do candidato e retorna o score de match.
     """
     df = pd.DataFrame([dados_candidato])
+
+    # Preenche valores ausentes e normaliza strings (repete o tratamento feito no fit)
+    df['cv'] = df['cv'].fillna("").astype(str)
+    df['nivel_ingles'] = df['nivel_ingles'].fillna("Desconhecido").str.lower()
+    df['area_atuacao'] = df['area_atuacao'].fillna("Indefinido").str.lower()
+
     X = fe.transform(df)
     proba = model.predict_proba(X)[0][1]  # Probabilidade da classe 1 (match)
     match = bool(proba > 0.5)
@@ -40,4 +44,4 @@ if __name__ == '__main__':
         "area_atuacao": "TI"
     }
     resultado = prever_match(exemplo)
-    print("\n🔍 Resultado da Inferência:", resultado)
+    print("Resultado da Inferência:", resultado)

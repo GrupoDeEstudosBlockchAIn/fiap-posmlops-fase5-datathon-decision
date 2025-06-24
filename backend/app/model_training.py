@@ -5,7 +5,7 @@ import os
 from sklearn.model_selection import train_test_split
 from xgboost import XGBClassifier
 from sklearn.metrics import classification_report
-from app.feature_engineering import FeatureEngineer
+from feature_engineering import FeatureEngineer  # Corrigido: sem 'app.'
 
 # Caminhos das bases
 APPLICANTS_PATH = 'data/applicants/applicants.json'
@@ -53,21 +53,21 @@ def construir_dataframe_supervisionado():
 
 def treinar_modelo():
 
-    print("🔄 Iniciando treinamento do modelo...")
+    print("Iniciando treinamento do modelo...")
 
     df = construir_dataframe_supervisionado()
 
-    print("✅ Dados carregados com", len(df), "candidatos")
+    print("Dados carregados com", len(df), "candidatos")
 
     X = df[['cv', 'nivel_ingles', 'area_atuacao']]
     y = df['match']
 
-    # Engenharia de features
-    fe = FeatureEngineer(coluna_texto='cv', colunas_categoricas=['nivel_ingles', 'area_atuacao'])
+    # Engenharia de features (corrigido: nomes dos parâmetros)
+    fe = FeatureEngineer(texto_col='cv', cat_cols=['nivel_ingles', 'area_atuacao'])
     X_transformed = fe.fit_transform(X)
 
     joblib.dump(X_transformed, FEATURES_PATH)
-    print("📦 Features salvas em", FEATURES_PATH)
+    print("Features salvas em", FEATURES_PATH)
 
     # Treinamento do modelo
     X_train, X_test, y_train, y_test = train_test_split(X_transformed, y, test_size=0.2, random_state=42)
@@ -76,11 +76,11 @@ def treinar_modelo():
     model.fit(X_train, y_train)
 
     y_pred = model.predict(X_test)
-    print("\n📊 Avaliação do Modelo:")
+    print("Avaliação do Modelo:")
     print(classification_report(y_test, y_pred))
 
     joblib.dump(model, MODEL_PATH)
-    print("✅ Modelo salvo em", MODEL_PATH)
+    print("Modelo salvo em", MODEL_PATH)
 
 
 if __name__ == '__main__':

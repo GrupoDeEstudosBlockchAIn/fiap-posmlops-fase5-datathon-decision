@@ -24,7 +24,7 @@ class FeatureEngineer:
 
         self.pipeline.fit(df)
         joblib.dump(self.pipeline, 'models/feature_pipeline.pkl')
-        print("✅ Engenharia de features treinada e salva com sucesso!")
+        print("Engenharia de features treinada e salva com sucesso!")
 
     def transform(self, df):
         if self.pipeline is None:
@@ -32,20 +32,23 @@ class FeatureEngineer:
 
         return self.pipeline.transform(df)
 
+    def fit_transform(self, df):
+        self.fit(df)
+        return self.transform(df)
+
 if __name__ == "__main__":
-    print("🔄 Iniciando extração de features...")
+    print("Iniciando extração de features...")
     df = pd.read_csv("data/dataset_processado.csv")
 
     # Prevenção extra: remove NaNs da coluna 'cv'
     df['cv'] = df['cv'].fillna("").astype(str)
 
-    # (opcional) também garante que colunas categóricas não tenham NaN
+    # Também garante que colunas categóricas não tenham NaN
     df['nivel_ingles'] = df['nivel_ingles'].fillna("Desconhecido").str.lower()
     df['area_atuacao'] = df['area_atuacao'].fillna("Indefinido").str.lower()
 
     fe = FeatureEngineer()
-    fe.fit(df)
-    X = fe.transform(df)
+    X = fe.fit_transform(df)
 
     joblib.dump(X, "data/features_treinamento.pkl")
-    print("✅ Features extraídas e salvas com sucesso!")
+    print("Features extraídas e salvas com sucesso!")

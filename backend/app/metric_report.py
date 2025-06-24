@@ -96,5 +96,5 @@ def generate_metric_report(y_true, y_pred, y_proba, output_dir='metric_reports')
     with open(html_path, 'w', encoding='utf-8') as f:
         f.write(html_content)
 
-    logging.info(f"✅ Relatório salvo em: {html_path}")
+    logging.info(f"Relatório salvo em: {html_path}")
     return html_path

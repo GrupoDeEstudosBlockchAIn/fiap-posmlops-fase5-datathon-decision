@@ -43,7 +43,7 @@ def coletar_dados(applicants_path, prospects_path, vagas_path):
                     "contratado": contratado
                 })
 
-        print(f"✅ Dados coletados com sucesso! Total de candidatos: {len(dados)}")
+        print(f"[OK] Dados coletados com sucesso! Total de candidatos: {len(dados)}")
         # Criar DataFrame
         return pd.DataFrame(dados)
     
