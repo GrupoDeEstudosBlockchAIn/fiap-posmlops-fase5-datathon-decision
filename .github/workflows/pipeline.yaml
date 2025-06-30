@@ -47,10 +47,18 @@ jobs:
         run: |
           gunzip -c decision-backend.tar.gz | docker load
 
-      - name: Subir container da API
+      - name: Subir container da API e aguardar readiness
         run: |
           docker run -d -p 8000:8000 --name decision_container decision-backend
-          sleep 10
+          echo "⏳ Aguardando a API iniciar..."
+          for i in {1..10}; do
+            if curl -s http://localhost:8000/docs > /dev/null; then
+              echo "✅ API está no ar!"
+              break
+            fi
+            echo "Tentativa $i: aguardando..."
+            sleep 3
+          done
           docker logs decision_container
 
       - name: Testar endpoint /match
