@@ -12,3 +12,7 @@ pytest
 requests
 unidecode
 xgboost
+sentence-transformers
+tf-keras
+imbalanced-learn
+httpx

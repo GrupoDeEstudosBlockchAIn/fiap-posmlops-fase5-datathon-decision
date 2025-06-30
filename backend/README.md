@@ -98,6 +98,7 @@ A API ficará disponível localmente em:
 
 ```
 fiap-posmlops-fase5-datathon-decision
+├── .github/ 
 │
 ├── .github/                             # Pipeline do projeto
 │   ├── workflows

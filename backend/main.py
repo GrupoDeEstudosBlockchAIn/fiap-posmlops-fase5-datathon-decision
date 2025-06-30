@@ -1,10 +1,12 @@
-# main.py
 import os
 import subprocess
 import uvicorn
 import sys
+import logging
 
-# Caminhos esperados
+# Configuração de logging
+logger = logging.getLogger(__name__)
+
 MODEL_PATH = "models/model.pkl"
 FEATURES_PATH = "models/feature_pipeline.pkl"
 DATASET_PATH = "data/dataset_processado.csv"
@@ -12,7 +14,7 @@ DATASET_PATH = "data/dataset_processado.csv"
 PYTHON_EXECUTABLE = sys.executable
 
 def run_script(script_path):
-    print(f"Executando: {script_path}")
+    logger.info(f"Executando script: {script_path}")
     result = subprocess.run(
         [PYTHON_EXECUTABLE, script_path],
         capture_output=True,
@@ -21,26 +23,24 @@ def run_script(script_path):
     )
 
     if result.returncode != 0:
-        print(f"Erro ao executar {script_path}:\n{result.stderr}")
+        logger.error(f"Erro ao executar {script_path}:\n{result.stderr}")
         exit(1)
     else:
-        print(f"{script_path} executado com sucesso.\n")
+        logger.info(f"{script_path} executado com sucesso.")
 
 def verificar_e_executar_pipeline():
     if not os.path.exists(DATASET_PATH):
+        logger.warning(f"{DATASET_PATH} não encontrado. Executando pré-processamento.")
         run_script("app/data_preprocessing.py")
     
     if not os.path.exists(FEATURES_PATH):
+        logger.warning(f"{FEATURES_PATH} não encontrado. Executando engenharia de features.")
         run_script("app/feature_engineering.py")
     
-    if not os.path.exists(MODEL_PATH):
-        run_script("app/model_training.py")
+    run_script("app/model_training.py")
 
 if __name__ == "__main__":
-    print("Inicializando pipeline do Decision AI...")
-
-    # Verifica e executa etapas se necessário
+    logger.info("Inicializando pipeline do Decision AI...")
     verificar_e_executar_pipeline()
-
-    # Sobe o servidor FastAPI
+    logger.info("Iniciando servidor FastAPI...")
     uvicorn.run("app.api:app", host="0.0.0.0", port=8000, reload=True)

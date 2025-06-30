@@ -1,23 +1,60 @@
+import logging
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from app.model_evaluation import prever_match
+from typing import List
+from app.semantic_api_matcher import processar_match_sbert
 
-app = FastAPI(title="Decision IA API", version="1.0")
+# Configuração de logging
+logger = logging.getLogger(__name__)
 
-class CandidatoInput(BaseModel):
+app = FastAPI(title="Decision SBERT API", version="2.0")
+
+class CandidatoRequest(BaseModel):
+    id_vaga: str
+    nome: str
     cv: str
     nivel_ingles: str
     area_atuacao: str
 
-class ResultadoOutput(BaseModel):
+class ResultadoMatch(BaseModel):
     match: bool
     score: float
     perfil_recomendado: str
 
-@app.post("/predict", response_model=ResultadoOutput)
-def prever_candidato(dados: CandidatoInput):
+class CandidatoRanking(BaseModel):
+    nome: str
+    cv: str
+    nivel_ingles: str
+    area_atuacao: str
+
+class RankingRequest(BaseModel):
+    id_vaga: str
+    candidatos: List[CandidatoRanking]
+
+class RankingOutput(BaseModel):
+    nome: str
+    score: float
+    perfil_recomendado: str
+
+@app.post("/match", response_model=ResultadoMatch)
+def obter_match_semantico(candidato: CandidatoRequest):
     try:
-        resultado = prever_match(dados.dict())
+        logger.info(f"Recebida solicitação de /match para candidato: {candidato.nome}")
+        resultado = processar_match_sbert(candidato)
+        logger.info(f"Match processado com sucesso para: {candidato.nome} | Score: {resultado['score']}")
         return resultado
     except Exception as e:
+        logger.error(f"Erro ao processar match para {candidato.nome}: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/rank", response_model=List[RankingOutput])
+def obter_ranking_candidatos(request: RankingRequest):
+    try:
+        logger.info(f"Recebida solicitação de /rank para vaga: {request.id_vaga} com {len(request.candidatos)} candidatos.")
+        from app.semantic_api_matcher import rankear_candidatos
+        resultado = rankear_candidatos(request.id_vaga, request.candidatos)
+        logger.info(f"Ranking gerado com sucesso para vaga: {request.id_vaga}")
+        return resultado
+    except Exception as e:
+        logger.error(f"Erro ao gerar ranking: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))

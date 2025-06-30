@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatório de Métricas - Modelo de Recomendação</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        h1 {
+            color: #005a9c;
+        }
+        h2 {
+            color: #0a2f5a;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 30px;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f0f0f0;
+        }
+        .metric-box {
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #e6f2ff;
+            border-left: 5px solid #005a9c;
+        }
+    </style>
+</head>
+<body>
+    <h1>Relatório de Métricas do Modelo</h1>
+    <p>Data de geração: 2025_06_27_10_18_14</p>
+
+    <div class="metric-box"><strong>Acurácia:</strong> 0.9808</div>
+    <div class="metric-box"><strong>ROC AUC:</strong> 0.9095</div>
+
+    <h2>Relatório de Classificação</h2>
+    <table>
+        <tr><th>Classe</th><th>Precisão</th><th>Revocação</th><th>F1-score</th><th>Suporte</th></tr><tr><td>0</td><td>0.98</td><td>1.00</td><td>0.99</td><td>40346.0</td></tr><tr><td>1</td><td>0.99</td><td>0.63</td><td>0.77</td><td>2136.0</td></tr></table>
+
+    <h2>Matriz de Confusão</h2>
+    <img src="confusion_matrix.png" alt="Matriz de Confusão" width="400"/>
+
+    <hr/>
+    <p>Relatório gerado automaticamente pelo Decision AI.</p>
+</body>
+</html>

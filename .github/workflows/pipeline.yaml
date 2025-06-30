@@ -32,7 +32,7 @@ jobs:
           path: deeplearning-app.tar.gz
 
   test:
-    name: ✅ Testar API no container
+    name: Testar API no container
     runs-on: ubuntu-latest
     needs: build
 
@@ -64,7 +64,7 @@ jobs:
             -d '{"prices": [100]*60}'
 
   package:
-    name: 📦 Empacotar aplicação
+    name: Empacotar aplicação
     runs-on: ubuntu-latest
     needs: test
 
@@ -92,7 +92,7 @@ jobs:
           path: fiap-posmlops-fase4.tar.gz
 
   deploy:
-    name: 🚀 Deploy (Simulado)
+    name: Deploy (Simulado)
     runs-on: ubuntu-latest
     needs: package
 

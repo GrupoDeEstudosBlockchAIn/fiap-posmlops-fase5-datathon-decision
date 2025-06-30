@@ -1,10 +1,14 @@
 import pandas as pd
+import joblib
+import logging
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
-import joblib
+
+# Configuração de logging
+logger = logging.getLogger(__name__)
 
 class FeatureEngineer:
     def __init__(self, texto_col='cv', cat_cols=['nivel_ingles', 'area_atuacao'], max_features=300):
@@ -14,6 +18,7 @@ class FeatureEngineer:
         self.pipeline = None
 
     def fit(self, df):
+        logger.info("Iniciando treino da engenharia de features...")
         text_vectorizer = TfidfVectorizer(max_features=self.max_features)
         cat_encoder = OneHotEncoder(handle_unknown='ignore')
 
@@ -24,12 +29,14 @@ class FeatureEngineer:
 
         self.pipeline.fit(df)
         joblib.dump(self.pipeline, 'models/feature_pipeline.pkl')
-        print("Engenharia de features treinada e salva com sucesso!")
+        logger.info("Pipeline de features treinada e salva com sucesso em 'models/feature_pipeline.pkl'.")
 
     def transform(self, df):
         if self.pipeline is None:
+            logger.info("Carregando pipeline de features já treinada...")
             self.pipeline = joblib.load('models/feature_pipeline.pkl')
 
+        logger.info("Transformando dados com pipeline de features...")
         return self.pipeline.transform(df)
 
     def fit_transform(self, df):
@@ -37,13 +44,11 @@ class FeatureEngineer:
         return self.transform(df)
 
 if __name__ == "__main__":
-    print("Iniciando extração de features...")
+    logger.info("Iniciando extração de features...")
+
     df = pd.read_csv("data/dataset_processado.csv")
 
-    # Prevenção extra: remove NaNs da coluna 'cv'
     df['cv'] = df['cv'].fillna("").astype(str)
-
-    # Também garante que colunas categóricas não tenham NaN
     df['nivel_ingles'] = df['nivel_ingles'].fillna("Desconhecido").str.lower()
     df['area_atuacao'] = df['area_atuacao'].fillna("Indefinido").str.lower()
 
@@ -51,4 +56,4 @@ if __name__ == "__main__":
     X = fe.fit_transform(df)
 
     joblib.dump(X, "data/features_treinamento.pkl")
-    print("Features extraídas e salvas com sucesso!")
+    logger.info("Features extraídas e salvas com sucesso em 'data/features_treinamento.pkl'")

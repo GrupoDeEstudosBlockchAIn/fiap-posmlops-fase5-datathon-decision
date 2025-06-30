@@ -1,100 +1,82 @@
-# app/metric_report.py
-
+import os
+import joblib
+import pandas as pd
+import datetime
+import logging
+from sklearn.metrics import classification_report, confusion_matrix, roc_auc_score, accuracy_score
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.metrics import classification_report, confusion_matrix, roc_auc_score, roc_curve
-from datetime import datetime
-import numpy as np
-import os
-import pandas as pd
-import logging
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+from app.feature_engineering import FeatureEngineer
+from app.model_utils import construir_dataframe_supervisionado
 
-def plot_confusion_matrix(y_true, y_pred, save_path):
-    cm = confusion_matrix(y_true, y_pred)
+# Configuração de logging
+logger = logging.getLogger(__name__)
+
+def gerar_metric_report():
+    MODEL_PATH = "models/model.pkl"
+    PIPELINE_PATH = "models/feature_pipeline.pkl"
+    OUTPUT_DIR = "metric_reports"
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+    logger.info("Carregando dados e reconstruindo pipeline de features...")
+    df = construir_dataframe_supervisionado()
+    X = df[['cv', 'nivel_ingles', 'area_atuacao']]
+    y = df['match']
+
+    fe = FeatureEngineer()
+    fe.pipeline = joblib.load(PIPELINE_PATH)
+    X_transformed = fe.transform(X)
+
+    model = joblib.load(MODEL_PATH)
+    y_pred = model.predict(X_transformed)
+    y_proba = model.predict_proba(X_transformed)[:, 1]
+
+    acc = accuracy_score(y, y_pred)
+    roc_auc = roc_auc_score(y, y_proba)
+    relatorio = classification_report(y, y_pred, output_dict=True)
+    matriz_conf = confusion_matrix(y, y_pred)
+
+    logger.info("Gerando visualizações de métricas...")
+
     plt.figure(figsize=(6, 4))
-    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues')
-    plt.title('Matriz de Confusão')
-    plt.xlabel('Predito')
-    plt.ylabel('Real')
+    sns.heatmap(matriz_conf, annot=True, fmt="d", cmap="Blues")
+    plt.title("Matriz de Confusão")
+    plt.xlabel("Predito")
+    plt.ylabel("Real")
+    matriz_path = os.path.join(OUTPUT_DIR, "confusion_matrix.png")
     plt.tight_layout()
-    plt.savefig(save_path)
+    plt.savefig(matriz_path)
     plt.close()
+    logger.info(f"Matriz de confusão salva em {matriz_path}")
 
-def plot_roc_curve(y_true, y_proba, save_path):
-    fpr, tpr, thresholds = roc_curve(y_true, y_proba)
-    auc = roc_auc_score(y_true, y_proba)
-    plt.figure(figsize=(6, 4))
-    plt.plot(fpr, tpr, label=f'AUC = {auc:.2f}')
-    plt.plot([0, 1], [0, 1], 'k--')
-    plt.title('Curva ROC')
-    plt.xlabel('False Positive Rate')
-    plt.ylabel('True Positive Rate')
-    plt.legend(loc='lower right')
-    plt.tight_layout()
-    plt.savefig(save_path)
-    plt.close()
+    now = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+    filename = f"model_metric_report_{now}.html"
+    filepath = os.path.join(OUTPUT_DIR, filename)
 
-def generate_metric_report(y_true, y_pred, y_proba, output_dir='metric_reports'):
-    os.makedirs(output_dir, exist_ok=True)
-    timestamp = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
-    html_filename = f"metric_report_{timestamp}.html"
-    html_path = os.path.join(output_dir, html_filename)
+    logger.info("Salvando relatório HTML com métricas do modelo...")
 
-    # Paths para os gráficos
-    conf_matrix_img = os.path.join(output_dir, f"conf_matrix_{timestamp}.png")
-    roc_curve_img = os.path.join(output_dir, f"roc_curve_{timestamp}.png")
+    with open(filepath, "w", encoding="utf-8") as f:
+        f.write(f"""<!DOCTYPE html>
+<html lang="pt-br">
+<head><meta charset="UTF-8"><title>Relatório de Métricas - Modelo</title>
+<style>body {{ font-family: Arial; background-color: #f9f9f9; margin: 40px; color: #333; }}
+.metric-box {{ background: #e6f2ff; padding: 10px; border-left: 5px solid #005a9c; margin-bottom: 10px; }}
+table {{ border-collapse: collapse; width: 100%; }} th, td {{ border: 1px solid #ccc; padding: 8px; text-align: center; }}</style>
+</head><body>
+<h1>Relatório de Métricas do Modelo</h1><p>Data: {now}</p>
+<div class="metric-box"><strong>Acurácia:</strong> {acc:.4f}</div>
+<div class="metric-box"><strong>ROC AUC:</strong> {roc_auc:.4f}</div>
+<h2>Relatório de Classificação</h2>
+<table><tr><th>Classe</th><th>Precisão</th><th>Revocação</th><th>F1-score</th><th>Suporte</th></tr>""")
 
-    # Plotar e salvar gráficos
-    plot_confusion_matrix(y_true, y_pred, conf_matrix_img)
-    plot_roc_curve(y_true, y_proba, roc_curve_img)
+        for label, metrics in relatorio.items():
+            if label in ["accuracy", "macro avg", "weighted avg"]:
+                continue
+            f.write(f"<tr><td>{label}</td><td>{metrics['precision']:.2f}</td><td>{metrics['recall']:.2f}</td><td>{metrics['f1-score']:.2f}</td><td>{metrics['support']}</td></tr>")
 
-    # Gerar tabela de métricas (classification report)
-    report_dict = classification_report(y_true, y_pred, output_dict=True)
-    report_df = pd.DataFrame(report_dict).transpose()
-    report_html_table = report_df.to_html(classes='table table-striped table-bordered', border=0)
+        f.write(f"""</table><h2>Matriz de Confusão</h2>
+<img src="confusion_matrix.png" alt="Matriz de Confusão" width="400"/>
+<hr/><p>Relatório gerado automaticamente pelo Decision AI.</p></body></html>""")
 
-    # Gerar AUC
-    auc = roc_auc_score(y_true, y_proba)
-
-    # HTML Final
-    html_content = f"""
-    <!DOCTYPE html>
-    <html lang="pt-BR">
-    <head>
-        <meta charset="UTF-8">
-        <title>Relatório de Métricas - {timestamp}</title>
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-        <style>
-            body {{ padding: 20px; }}
-            h1, h2 {{ margin-top: 20px; }}
-            img {{ max-width: 100%; height: auto; }}
-        </style>
-    </head>
-    <body>
-        <h1>📊 Relatório de Métricas - Datathon Decision</h1>
-        <p><strong>Data de geração:</strong> {timestamp}</p>
-
-        <h2>🔎 Classification Report</h2>
-        {report_html_table}
-
-        <h2>🧱 Matriz de Confusão</h2>
-        <img src="{os.path.basename(conf_matrix_img)}" alt="Matriz de Confusão">
-
-        <h2>📈 Curva ROC (AUC: {auc:.2f})</h2>
-        <img src="{os.path.basename(roc_curve_img)}" alt="Curva ROC">
-
-        <footer class="mt-4">
-            <p>Projeto Datathon Decision - Desenvolvido por [Seu Nome]</p>
-        </footer>
-    </body>
-    </html>
-    """
-
-    # Salvar o HTML
-    with open(html_path, 'w', encoding='utf-8') as f:
-        f.write(html_content)
-
-    logging.info(f"Relatório salvo em: {html_path}")
-    return html_path
+    logger.info(f"Relatório HTML salvo com sucesso: {filepath}")

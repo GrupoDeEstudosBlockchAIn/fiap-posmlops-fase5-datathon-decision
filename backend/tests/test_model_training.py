@@ -1,18 +1,20 @@
 import pandas as pd
-from app.model_training import train_model
-import numpy as np
+from app.model_training import treinar_modelo
 
-def test_train_model():
-    # Criando dados fake
-    features = pd.DataFrame(np.random.rand(100, 3), columns=['f1', 'f2', 'f3'])
-    labels = np.random.randint(0, 2, size=100)
+def test_model_training():
+    # Criando dados fake com pelo menos 10 amostras balanceadas
+    df = pd.DataFrame({
+        'cv': [
+            'Python backend', 'Engenheiro de dados', 'Frontend Vue.js',
+            'Analista de dados', 'DevOps AWS', 'Cientista de Dados',
+            'Tester QA', 'Engenheiro ML', 'Sysadmin Linux', 'Arquiteto de Soluções'
+        ],
+        'nivel_ingles': ['avançado', 'básico', 'intermediário', 'básico', 'avançado',
+                         'avançado', 'básico', 'intermediário', 'básico', 'avançado'],
+        'area_atuacao': ['TI', 'Dados', 'TI', 'Dados', 'Infraestrutura',
+                         'Dados', 'TI', 'IA', 'Infraestrutura', 'TI'],
+        'match': [1, 0, 1, 0, 1, 1, 0, 0, 1, 0]
+    })
 
-    model, scaler, _ = train_model(features, labels)
-
-    # Testa se o modelo é um objeto Keras
-    assert model is not None
-    assert hasattr(model, 'predict')
-
-    # Testa se o scaler é do sklearn
-    from sklearn.preprocessing import StandardScaler
-    assert isinstance(scaler, StandardScaler)
+    # Chamando a função com os dados fake
+    treinar_modelo(df)
