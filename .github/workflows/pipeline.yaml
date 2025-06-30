@@ -20,8 +20,7 @@ jobs:
 
       - name: Build da imagem Docker do backend
         run: |
-          cd backend
-          docker build -t decision-backend .
+          docker build -t decision-backend -f backend/Dockerfile .
 
       - name: Salvar imagem Docker
         run: |
