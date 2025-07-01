@@ -1,7 +1,8 @@
 # Ignore databases (json)
-data/applicants/applicants.json
-data/prospects/prospects.json
-data/vagas/vagas.json
+backend/data/applicants/applicants.json
+backenddata/data/prospects/prospects.json
+backend/data/vagas/vagas.json
+backend/data/dataset_processado.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
