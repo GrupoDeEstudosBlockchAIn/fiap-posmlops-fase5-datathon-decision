@@ -1,20 +1,15 @@
-# Etapa base: imagem oficial do Python
 FROM python:3.10-slim
 
-# Define diretório de trabalho no container
 WORKDIR /app
 
-# Copia arquivos de dependência
-COPY ../../requirements.txt .
-
-# Instala as dependências do projeto
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copia todos os arquivos do backend para o container
-COPY . .
+COPY backend/ .
 
-# Expõe a porta padrão do FastAPI
 EXPOSE 8000
 
-# Comando para rodar a aplicação
-CMD ["python", "main.py"]
+HEALTHCHECK --interval=30s --timeout=10s --start-period=480s --retries=10 \
+  CMD curl --fail http://localhost:8000/docs || exit 1
+
+CMD ["uvicorn", "app.api:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -20,8 +20,7 @@ jobs:
 
       - name: Build da imagem Docker do backend
         run: |
-          cd backend
-          docker build -t decision-backend .
+          docker build -t decision-backend -f backend/Dockerfile .
 
       - name: Salvar imagem Docker
         run: |
@@ -50,9 +49,39 @@ jobs:
 
       - name: Subir container da API
         run: |
-          docker run -d -p 8000:8000 --name decision_container decision-backend
-          sleep 10
-          docker logs decision_container
+          docker run -d \
+            -p 8000:8000 \
+            --name decision_container \
+            decision-backend
+
+      - name: Aguardar container saudável ou API no ar
+        run: |
+          echo "⏳ Aguardando container saudável ou API disponível..."
+          for i in {1..20}; do
+            STATUS=$(docker inspect --format='{{.State.Health.Status}}' decision_container 2>/dev/null || echo "unknown")
+            echo "Tentativa $i - Status: $STATUS"
+
+            if [ "$STATUS" == "healthy" ]; then
+              echo "✅ Container está saudável!"
+              break
+            fi
+
+            if curl -s http://localhost:8000/docs > /dev/null; then
+              echo "✅ API responde no /docs (fallback curl)"
+              break
+            fi
+
+            if [ "$i" -eq 20 ]; then
+              echo "❌ Timeout: Container não ficou saudável nem respondeu a /docs."
+              docker logs decision_container
+              exit 1
+            fi
+
+            sleep 5
+          done
+
+      - name: Ver logs do container (debug)
+        run: docker logs decision_container
 
       - name: Testar endpoint /match
         run: |

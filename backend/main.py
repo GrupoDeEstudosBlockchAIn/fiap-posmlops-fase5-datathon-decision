@@ -5,6 +5,7 @@ import sys
 import logging
 
 # Configuração de logging
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 MODEL_PATH = "models/model.pkl"
@@ -43,4 +44,4 @@ if __name__ == "__main__":
     logger.info("Inicializando pipeline do Decision AI...")
     verificar_e_executar_pipeline()
     logger.info("Iniciando servidor FastAPI...")
-    uvicorn.run("app.api:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("app.api:app", host="0.0.0.0", port=8000)
