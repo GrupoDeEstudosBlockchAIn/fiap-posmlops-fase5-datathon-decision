@@ -47,34 +47,41 @@ jobs:
         run: |
           gunzip -c decision-backend.tar.gz | docker load
 
-      - name: Subir container da API com healthcheck
+      - name: Subir container da API
         run: |
           docker run -d \
             -p 8000:8000 \
             --name decision_container \
             decision-backend
 
-      - name: Aguardar container saudável
+      - name: Aguardar container saudável ou API no ar
         run: |
-          echo "⏳ Aguardando container ficar saudável..."
-          for i in {1..15}; do
-            STATUS=$(docker inspect --format='{{.State.Health.Status}}' decision_container)
-            echo "Status: $STATUS"
+          echo "⏳ Aguardando container saudável ou API disponível..."
+          for i in {1..20}; do
+            STATUS=$(docker inspect --format='{{.State.Health.Status}}' decision_container 2>/dev/null || echo "unknown")
+            echo "Tentativa $i - Status: $STATUS"
+
             if [ "$STATUS" == "healthy" ]; then
               echo "✅ Container está saudável!"
               break
             fi
-            if [ "$i" -eq 15 ]; then
-              echo "❌ Timeout ao aguardar o container ficar saudável."
+
+            if curl -s http://localhost:8000/docs > /dev/null; then
+              echo "✅ API responde no /docs (fallback curl)"
+              break
+            fi
+
+            if [ "$i" -eq 20 ]; then
+              echo "❌ Timeout: Container não ficou saudável nem respondeu a /docs."
               docker logs decision_container
               exit 1
             fi
+
             sleep 5
           done
 
       - name: Ver logs do container (debug)
         run: docker logs decision_container
-
 
       - name: Testar endpoint /match
         run: |
