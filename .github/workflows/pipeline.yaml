@@ -52,9 +52,6 @@ jobs:
           docker run -d \
             -p 8000:8000 \
             --name decision_container \
-            --health-cmd="curl --silent --fail http://localhost:8000/docs || exit 1" \
-            --health-interval=5s \
-            --health-retries=12 \
             decision-backend
 
       - name: Aguardar container saudável
