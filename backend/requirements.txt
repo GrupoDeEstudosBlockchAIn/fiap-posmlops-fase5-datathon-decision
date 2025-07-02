@@ -16,5 +16,3 @@ sentence-transformers
 tf-keras
 imbalanced-learn
 httpx
-requests
-streamlit

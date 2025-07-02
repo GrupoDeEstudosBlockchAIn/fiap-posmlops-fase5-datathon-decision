@@ -118,7 +118,7 @@ jobs:
             backend/models/ \
             backend/tests/ \
             backend/Dockerfile \
-            requirements.txt \
+            backend/requirements.txt \
             README.md
 
       - name: Upload do pacote empacotado
