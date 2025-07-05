@@ -1,5 +1,5 @@
 import pandas as pd
-from app.feature_engineering import FeatureEngineer
+from app.model.feature_engineering import FeatureEngineer
 
 def test_feature_engineer():
     df = pd.DataFrame({

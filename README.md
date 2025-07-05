@@ -165,25 +165,31 @@ fiap-posmlops-fase5-datathon-decision
 │
 ├── backend/
 │   ├── app/
+│   │   ├── etl/
+│   │   │   ├── backblaze_loader.py
+│   │   │   ├── data_collector.py
+│   │   │   ├── data_preprocessing.py
+│   │   │
+│   │   ├── model/
+│   │   │   ├── feature_engineering.py
+│   │   │   ├── model_evaluation.py
+│   │   │   ├── model_training.py
+│   │   │
+│   │   ├── report/
+│   │   │   ├── metric_report.py
+│   │   │
+│   │   ├── semantic/
+│   │   │   ├── semantic_api_matcher.py
+│   │   │   ├── semantic_dataset_builder.py
+│   │   │   ├── semantic_matcher.py
+│   │   │
+│   │   ├── utils/
+│   │   │   ├── constants.py
+│   │   │   ├── model_utils.py
+│   │   │
 │   │   ├── api.py
-│   │   ├── data_collector.py
-│   │   ├── data_preprocessing.py
-│   │   ├── feature_engineering.py
-│   │   ├── metric_report.py
-│   │   ├── model_evaluation.py
-│   │   ├── model_training.py
-│   │   ├── model_utils.py
-│   │   ├── semantic_api_matcher.py
-│   │   ├── semantic_dataset_builder.py
-│   │   └── semantic_matcher.py
 │   │
 │   ├── data/
-│   │   ├── applicants/
-│   │   │   └── applicants.json
-│   │   ├── prospects/
-│   │   │   └── prospects.json
-│   │   ├── vagas/
-│   │   │   └── vagas.json
 │   │   ├── dataset_processado.csv
 │   │   └── features_treinamento.pkl
 │   │
