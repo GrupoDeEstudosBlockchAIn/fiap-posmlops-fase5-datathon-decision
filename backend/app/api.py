@@ -2,7 +2,7 @@ import logging
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import List
-from app.semantic_api_matcher import processar_match_sbert
+from app.semantic.semantic_api_matcher import processar_match_sbert
 
 # Configuração de logging
 logger = logging.getLogger(__name__)
@@ -51,7 +51,7 @@ def obter_match_semantico(candidato: CandidatoRequest):
 def obter_ranking_candidatos(request: RankingRequest):
     try:
         logger.info(f"Recebida solicitação de /rank para vaga: {request.id_vaga} com {len(request.candidatos)} candidatos.")
-        from app.semantic_api_matcher import rankear_candidatos
+        from app.semantic.semantic_api_matcher import rankear_candidatos
         resultado = rankear_candidatos(request.id_vaga, request.candidatos)
         logger.info(f"Ranking gerado com sucesso para vaga: {request.id_vaga}")
         return resultado

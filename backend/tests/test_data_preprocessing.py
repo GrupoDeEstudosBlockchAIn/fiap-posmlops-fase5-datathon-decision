@@ -1,5 +1,5 @@
 import pandas as pd
-from app.data_preprocessing import DataPreprocessor
+from app.etl.data_preprocessing import DataPreprocessor
 
 def test_preprocess_data():
     df = pd.DataFrame({
