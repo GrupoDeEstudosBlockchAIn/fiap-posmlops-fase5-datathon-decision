@@ -1,5 +1,5 @@
 import pandas as pd
-from app.model_training import treinar_modelo
+from app.model.model_training import treinar_modelo
 
 def test_model_training():
     # Criando dados fake com pelo menos 10 amostras balanceadas
