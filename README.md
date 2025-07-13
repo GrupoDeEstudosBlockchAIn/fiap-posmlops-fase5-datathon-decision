@@ -215,15 +215,6 @@ fiap-posmlops-fase5-datathon-decision
 │   ├── requirements.txt
 │   └── main.py
 │
-├── frontend/
-│   ├── decision_app.py
-│   ├── requirements.txt
-│   ├── logs/
-│   │   └── app.log
-│   ├── tests/
-│   │   └── test_streamlit_app.py
-│   └── Dockerfile
-│
 ├── README.md
 ├── .gitignore
 └── Doc_Recrutamento_Decision.pdf
