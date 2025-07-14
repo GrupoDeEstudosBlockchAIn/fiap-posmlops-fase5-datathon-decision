@@ -1,10 +1,10 @@
-import os
 import pandas as pd
 import joblib
 import logging
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.compose import ColumnTransformer
+from app.utils.logging_config import setup_logging
 
 from app.utils.constants import DATASET_PATH, FEATURES_PATH, FEATURE_PIPELINE_PATH
 input_path = DATASET_PATH
@@ -12,8 +12,7 @@ output_path = FEATURES_PATH
 feature_pipeline_path = FEATURE_PIPELINE_PATH
 
 # Configuração de logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = setup_logging(__name__)
 
 class FeatureEngineer:
     def __init__(self, texto_col='cv', cat_cols=['nivel_ingles', 'area_atuacao'], max_features=300):

@@ -1,8 +1,9 @@
 import logging
 from sentence_transformers import SentenceTransformer, util
+from app.utils.logging_config import setup_logging
 
 # Configuração de logging
-logger = logging.getLogger(__name__)
+logger = setup_logging(__name__)
 
 # Modelo SBERT
 model = SentenceTransformer('all-MiniLM-L6-v2')
