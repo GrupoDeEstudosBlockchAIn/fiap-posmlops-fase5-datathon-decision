@@ -9,11 +9,10 @@ from imblearn.over_sampling import SMOTE
 from app.model.feature_engineering import FeatureEngineer
 from app.report.metric_report import gerar_metric_report
 from app.utils.model_utils import construir_dataframe_supervisionado
+from app.utils.constants import FEATURES_PATH, MODEL_PATH
+from app.utils.logging_config import setup_logging
 
-logger = logging.getLogger(__name__)
-
-FEATURES_PATH = 'data/features_treinamento.pkl'
-MODEL_PATH = 'models/model.pkl'
+logger = setup_logging(__name__)
 
 def treinar_modelo(df=None):
     logger.info("Iniciando processo de treinamento do modelo...")

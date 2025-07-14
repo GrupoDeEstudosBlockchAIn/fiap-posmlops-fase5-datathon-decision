@@ -1,12 +1,11 @@
-import json
 import pandas as pd
 from pathlib import Path
-import logging
 from app.etl.backblaze_loader import download_json_from_backblaze
 from app.utils.constants import CONST_DATABASE_APPLICANTS, CONST_DATABASE_PROSPECTS, CONST_DATABASE_VAGAS
+from app.utils.logging_config import setup_logging
 
 # Configuração de logging
-logger = logging.getLogger(__name__)
+logger = setup_logging(__name__)
 
 def coletar_dados():
     try:
@@ -49,7 +48,7 @@ def coletar_dados():
         return pd.DataFrame(dados)
 
     except FileNotFoundError as e:
-        logger.error(f"Erro ao carregar arquivos JSON: {e}")
+        logger.exception(f"Erro ao carregar arquivos JSON: {e}")
         return pd.DataFrame()
     except Exception as e:
         logger.exception("Erro inesperado durante a coleta de dados.")

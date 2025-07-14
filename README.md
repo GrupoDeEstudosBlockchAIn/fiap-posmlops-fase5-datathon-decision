@@ -74,6 +74,80 @@ A aplicação integra técnicas de **Machine Learning supervisionado**, **simila
 
 ---
 
+
+## 📁 Estrutura do Projeto
+
+```
+fiap-posmlops-fase5-datathon-decision
+├── .github/
+│   └── workflows/
+│       └── pipeline.yaml
+│
+├── backend/
+│   ├── app/
+│   │   ├── etl/
+│   │   │   ├── backblaze_loader.py
+│   │   │   ├── data_collector.py
+│   │   │   └── data_preprocessing.py
+│   │   │
+│   │   ├── model/
+│   │   │   ├── feature_engineering.py
+│   │   │   ├── model_evaluation.py
+│   │   │   └── model_training.py
+│   │   │
+│   │   ├── report/
+│   │   │   └── metric_report.py
+│   │   │
+│   │   ├── semantic/
+│   │   │   ├── semantic_api_matcher.py
+│   │   │   ├── semantic_dataset_builder.py
+│   │   │   └── semantic_matcher.py
+│   │   │
+│   │   ├── utils/
+│   │   │   ├── constants.py
+│   │   │   ├── model_utils.py
+│   │   │   └── logging_config.py
+│   │   │
+│   │   └── api.py
+│   │
+│   ├── data/
+│   │   ├── dataset_processado.csv
+│   │   └── features_treinamento.pkl
+│   │
+│   ├── metric_reports/
+│   │   └── model_metric_report_<timestamp>.html
+│   │
+│   ├── models/
+│   │   ├── model.pkl
+│   │   └── feature_pipeline.pkl
+│   │
+│   ├── tests/
+│   │   ├── test_api.py
+│   │   ├── test_data_preprocessing.py
+│   │   ├── test_feature_engineering.py
+│   │   ├── test_model_training.py
+│   │   └── __init__.py
+│   │
+│   ├── Dockerfile
+│   ├── Procfile
+│   ├── requirements.txt
+│   └── main.py
+│
+├── README.md
+├── .gitignore
+└── Doc_Recrutamento_Decision.pdf
+```
+
+---
+
+
+## Executar a API (produção)
+```bash
+Acesse a API (Produção): https://fiap-posmlops-fase5-datathon-decision-production.up.railway.app/docs
+```
+
+---
+
 ## 🌐 Endpoints da API
 
 | Método | Rota      | Descrição                                                                  |
@@ -85,6 +159,7 @@ A aplicação integra técnicas de **Machine Learning supervisionado**, **simila
 
 ```json
 {
+  "id_vaga": "5185",
   "nome": "Carlos Mendes",
   "cv": "Consultor SAP BASIS com experiência em ambientes AWS e Oracle. Responsável por liderar suporte técnico e implantações. Inglês fluente.",
   "nivel_ingles": "Fluente",
@@ -155,72 +230,6 @@ Gerados automaticamente via `metric_report.py`:
 
 ---
 
-## 📁 Estrutura do Projeto
-
-```
-fiap-posmlops-fase5-datathon-decision
-├── .github/
-│   └── workflows/
-│       └── pipeline.yaml
-│
-├── backend/
-│   ├── app/
-│   │   ├── etl/
-│   │   │   ├── backblaze_loader.py
-│   │   │   ├── data_collector.py
-│   │   │   ├── data_preprocessing.py
-│   │   │
-│   │   ├── model/
-│   │   │   ├── feature_engineering.py
-│   │   │   ├── model_evaluation.py
-│   │   │   ├── model_training.py
-│   │   │
-│   │   ├── report/
-│   │   │   ├── metric_report.py
-│   │   │
-│   │   ├── semantic/
-│   │   │   ├── semantic_api_matcher.py
-│   │   │   ├── semantic_dataset_builder.py
-│   │   │   ├── semantic_matcher.py
-│   │   │
-│   │   ├── utils/
-│   │   │   ├── constants.py
-│   │   │   ├── model_utils.py
-│   │   │
-│   │   ├── api.py
-│   │
-│   ├── data/
-│   │   ├── dataset_processado.csv
-│   │   └── features_treinamento.pkl
-│   │
-│   ├── logs/
-│   │   └── app.log
-│   │
-│   ├── metric_reports/
-│   │   └── model_metric_report_<timestamp>.html
-│   │
-│   ├── models/
-│   │   ├── model.pkl
-│   │   └── feature_pipeline.pkl
-│   │
-│   ├── tests/
-│   │   ├── test_api.py
-│   │   ├── test_data_preprocessing.py
-│   │   ├── test_feature_engineering.py
-│   │   ├── test_model_training.py
-│   │   └── __init__.py
-│   │
-│   ├── Dockerfile
-│   ├── Procfile
-│   ├── requirements.txt
-│   └── main.py
-│
-├── README.md
-├── .gitignore
-└── Doc_Recrutamento_Decision.pdf
-```
-
----
 
 ## 🐳 Como Rodar com Docker
 
@@ -231,20 +240,6 @@ cd backend
 docker build -t decision-backend .
 docker run -p 8000:8000 decision-backend
 ```
-
-Acesse a API: [http://localhost:8000/docs](http://localhost:8000/docs)
-
----
-
-### Frontend (Streamlit)
-
-```bash
-cd frontend
-docker build -t decision-frontend .
-docker run -p 8501:8501 decision-frontend
-```
-
-Interface: [http://localhost:8501](http://localhost:8501)
 
 ---
 
