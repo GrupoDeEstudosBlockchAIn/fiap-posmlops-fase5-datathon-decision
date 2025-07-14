@@ -1,11 +1,11 @@
-import logging
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import List
 from app.semantic.semantic_api_matcher import processar_match_sbert
+from app.utils.logging_config import setup_logging
 
 # Configuração de logging
-logger = logging.getLogger(__name__)
+logger = setup_logging(__name__) 
 
 app = FastAPI(title="Decision SBERT API", version="2.0")
 
@@ -43,9 +43,11 @@ def obter_match_semantico(candidato: CandidatoRequest):
         resultado = processar_match_sbert(candidato)
         logger.info(f"Match processado com sucesso para: {candidato.nome} | Score: {resultado['score']}")
         return resultado
+    
     except Exception as e:
-        logger.error(f"Erro ao processar match para {candidato.nome}: {str(e)}")
+        logger.exception(f"Erro ao processar match para {candidato.nome}: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
+        
 
 @app.post("/rank", response_model=List[RankingOutput])
 def obter_ranking_candidatos(request: RankingRequest):
@@ -55,6 +57,7 @@ def obter_ranking_candidatos(request: RankingRequest):
         resultado = rankear_candidatos(request.id_vaga, request.candidatos)
         logger.info(f"Ranking gerado com sucesso para vaga: {request.id_vaga}")
         return resultado
+    
     except Exception as e:
-        logger.error(f"Erro ao gerar ranking: {str(e)}")
+        logger.exception(f"Erro ao gerar ranking: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
