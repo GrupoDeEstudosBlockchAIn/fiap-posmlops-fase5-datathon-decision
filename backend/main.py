@@ -1,5 +1,4 @@
 import os
-import logging
 import uvicorn
 import pandas as pd
 
@@ -8,10 +7,10 @@ from app.etl.data_preprocessing import DataPreprocessor
 from app.etl.data_collector import coletar_dados
 from app.model.feature_engineering import FeatureEngineer
 from app.model.model_training import treinar_modelo
+from app.utils.logging_config import setup_logging
 
 # Configuração de logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = setup_logging(__name__)
 
 def verificar_e_executar_pipeline():
     # Etapa 1: Pré-processamento
@@ -20,7 +19,7 @@ def verificar_e_executar_pipeline():
 
         df = coletar_dados()
         if df.empty:
-            logger.error("Pipeline abortada: Nenhum dado coletado.")
+            logger.exception("Pipeline abortada: Nenhum dado coletado.")
             return
 
         preprocessor = DataPreprocessor()

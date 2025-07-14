@@ -2,16 +2,17 @@ import json
 import logging
 import pandas as pd
 from app.semantic.semantic_matcher import avaliar_match
+from app.utils.logging_config import setup_logging
 
 # Configuração de logging
-logger = logging.getLogger(__name__)
+logger = setup_logging(__name__)
 
 def carregar_json(path):
     try:
         with open(path, 'r', encoding='utf-8') as f:
             return json.load(f)
     except Exception as e:
-        logger.error(f"Erro ao carregar arquivo JSON: {path}")
+        logger.exception(f"Erro ao carregar arquivo JSON: {path}")
         raise e
 
 def construir_dataset_semantico(applicants_path, prospects_path, vagas_path, output_path='data/dataset_semantico.csv'):

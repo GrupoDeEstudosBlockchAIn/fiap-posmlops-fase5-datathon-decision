@@ -1,11 +1,11 @@
-import json
 import logging
 from typing import List
 from sentence_transformers import SentenceTransformer, util
 from app.etl.backblaze_loader import download_json_from_backblaze
+from app.utils.logging_config import setup_logging
 
 # Configuração de logging
-logger = logging.getLogger(__name__)
+logger = setup_logging(__name__)
 
 sbert_model = SentenceTransformer('all-MiniLM-L6-v2')
 logger.info("Modelo SBERT carregado com sucesso.")

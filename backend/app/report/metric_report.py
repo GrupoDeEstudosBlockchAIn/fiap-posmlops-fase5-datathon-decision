@@ -2,7 +2,6 @@ import os
 import joblib
 import pandas as pd
 import datetime
-import logging
 from sklearn.metrics import classification_report, confusion_matrix, roc_auc_score, accuracy_score
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -10,12 +9,13 @@ import seaborn as sns
 from app.model.feature_engineering import FeatureEngineer
 from app.utils.model_utils import construir_dataframe_supervisionado
 from app.utils.constants import FEATURE_PIPELINE_PATH, MODEL_PATH
+from app.utils.logging_config import setup_logging
 
 model_path = MODEL_PATH
 feature_pipeline_path = FEATURE_PIPELINE_PATH
 
 # Configuração de logging
-logger = logging.getLogger(__name__)
+logger = setup_logging(__name__)
 
 def gerar_metric_report():
     OUTPUT_DIR = "metric_reports"

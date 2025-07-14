@@ -1,17 +1,16 @@
-import os
 import pandas as pd
 import re
 import unidecode
 from sklearn.base import BaseEstimator, TransformerMixin
-import logging
 
 from app.etl.data_collector import coletar_dados
 from app.utils.constants import DATASET_PATH
+from app.utils.logging_config import setup_logging
+
 output_path = DATASET_PATH
 
 # Configuração de logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = setup_logging(__name__)
 
 class DataPreprocessor(BaseEstimator, TransformerMixin):
     def __init__(self, colunas_texto=['cv']):
