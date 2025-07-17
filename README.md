@@ -135,7 +135,7 @@ fiap-posmlops-fase5-datathon-decision
 │
 ├── README.md
 ├── .gitignore
-└── Doc_Recrutamento_Decision.pdf
+└── Documetacao_API_Decision_AI.pdf
 ```
 
 ---
@@ -258,7 +258,10 @@ docker run -p 8000:8000 decision-backend
 
 ## 📽️ Vídeo Demonstrativo
 
-🎬 \[Inserir link para o vídeo explicativo da solução]
+```bash
+https://www.youtube.com/watch?v=kkue8QPgdVk
+
+```
 
 ---
 
